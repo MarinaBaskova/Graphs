@@ -33,7 +33,10 @@ class Graph:
         beginning from starting_vertex.
         """
         # Create an empty set to store visisted vertex
+        # Usisng set automaticly sotring the values you added , so returning set was not returning the actual path found in corect order.
+
         visited = set()
+        # visisted =[]
         # Create an empty Queue and enqueue the starting vertex
         q = Queue()
         q.enqueue(starting_vertex)
@@ -45,6 +48,7 @@ class Graph:
             if v not in visited:
                 # Mark it as visisted
                 visited.add(v)
+                # visisted.append(v)
                 print(v)
                 # Then add all of its neighbors to the back of the queue
                 for neighbor in self.vertices[v]:
@@ -82,6 +86,7 @@ class Graph:
         """
         if visisted is None:
             visisted = set()
+            # visisted = []
 
         if starting_vertex not in visisted:
             print(starting_vertex)
