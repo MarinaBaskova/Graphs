@@ -1,7 +1,7 @@
 from room import Room
 from player import Player
 from world import World
-
+from traversal import traverse_recursively
 import random
 
 # Load world
@@ -23,279 +23,34 @@ world.loadGraph(roomGraph)
 # UNCOMMENT TO VIEW MAP
 world.printRooms()
 
+# current player
 player = Player("Name", world.startingRoom)
 
+
 # Fill this out
-traversalPath = []
-
-
-class Queue():
-    def __init__(self):
-        self.queue = []
-
-    def enqueue(self, value):
-        self.queue.append(value)
-
-    def dequeue(self):
-        if self.size() > 0:
-            return self.queue.pop(0)
-        else:
-            return None
-
-    def size(self):
-        return len(self.queue)
-
-
-class Graph:
-    """Represent a graph as a dictionary of vertices mapping labels to edges."""
-
-    def __init__(self):
-        self.vertices = {}
-
-    def direction_opposite(self, direction):
-        if direction == "n":
-            return "s"
-        if direction == "s":
-            return "n"
-        if direction == "w":
-            return "e"
-        if direction == "e":
-            return "w"
-
-    def add_vertex(self, vertex):
-        """
-        Add a vertex to the graph.
-        """
-        self.vertices[vertex] = {}
-
-    def add_edge(self, current_room, prev_room, direction):
-        """
-        Add a directed edge to the graph.
-        """
-        if current_room not in self.vertices:
-            self.add_vertex(current_room)
-        map_exits = {}
-        new_direction = self.direction_opposite(direction)
-
-        map_exits[new_direction] = prev_room
-
-        current_exists = player.currentRoom.getExits()
-
-        # UPDATE FOR CURRENT ROOM
-        for exit in current_exists:
-            if exit not in map_exits and "exits" not in self.vertices[current_room]:
-                map_exits[exit] = "?"
-
-        if "exits" not in self.vertices[current_room]:
-            self.vertices[current_room] = {
-                "exits": map_exits, "direction left": current_exists}
-
-        for i in self.vertices[current_room]["direction left"]:
-            print("MAYBE HERE", i, new_direction)
-            self.vertices[current_room]["direction left"].remove(new_direction)
-            break
-
-        self.vertices[prev_room]["exits"][direction] = current_room
-
-        for i in self.vertices[prev_room]["direction left"]:
-            if self.vertices[prev_room]["exits"][i] != "?":
-                self.vertices[prev_room]["direction left"].remove(i)
-
-    # def direction_to_check(self, current_id, exits, prev=None):
-
-    #     for room_exit in self.vertices[current_id]["directions left"].copy():
-    #         print(room_exit, exits, prev)
-    #         if prev is not None and room_exit in prev:
-    #             self.vertices[current_id]["exits"][room_exit] = prev[room_exit]
-    #             self.vertices[current_id]["directions left"].remove(
-    #                 room_exit)
-
-    def initial_room(self, start):
-        map_exits = {}
-        self.add_vertex(start)
-        current_exists = player.currentRoom.getExits()
-
-        for exit in current_exists:
-            if exit not in map_exits:
-                map_exits[exit] = "?"
-
-        self.vertices[start] = {
-            "exits": map_exits, "direction left": current_exists}
-
-    def move(self, direction, dft=True):
-        prev_room_id = player.currentRoom.id
-        player.travel(direction)
-        traversalPath.append(direction)
-        print("WHAT", len(traversalPath))
-
-        current_room_id = player.currentRoom.id
-        if current_room_id not in self.vertices:
-           
-            self.add_edge(current_room_id, prev_room_id, direction)
-            # current_exits = player.currentRoom.getExits()
-            if len(self.vertices[current_room_id]["direction left"]) == 0:
-                print("Deadend =(")
-        elif dft:
-
-            self.vertices[current_room_id]["exits"][self.direction_opposite(
-                direction)] = prev_room_id
-            self.vertices[prev_room_id]["exits"][direction] = current_room_id
-            # self.direction_to_check()
-
-    def dft_room(self):
-        current_exits = self.vertices[player.currentRoom.id]["direction left"]
-        if len(self.vertices) >= len(roomGraph):
-
-            return True
-
-        for exit in current_exits:
-            if self.vertices[player.currentRoom.id]["exits"][exit] == "?":
-                self.move(exit)
-                break
-
-        # if Deadend # BFS
-        if len(self.vertices[player.currentRoom.id]["direction left"]) == 0 and len(self.vertices) != len(roomGraph):
-            print("Invoke BTS")
-            self.bts_deadend_room(player.currentRoom.id)
-
-    def bts_deadend_room(self, current_room, destination_vertex="?"):
-        visited = []
-        print("BFS", current_room)
-
-        q = Queue()
-        q.enqueue(current_room)
-        path = []
-        prev = None
-        # While the queue is not empty
-        while q.size() > 0:
-
-            temp = q.dequeue()
-            
-            visited.append(temp)
-
-            # current_room_exits = player.currentRoom.getExits()
-            current_room_exits = self.vertices[temp]["direction left"]
-            # if prev is not None:
-            #     #current_room_exits = self.vertices[temp]["direction left"]
-            # else:
-            #     pass
-
-            if len(current_room_exits) == 0:
-
-                # current_room_exits = player.currentRoom.getExits()
-                current_room_exits = self.vertices[temp]["exits"]
-                skip = False
-                for i in current_room_exits.copy():
-                    if current_room_exits[i] == "?":
-                        skip = True
-                      
-                if skip:
-                    for i in current_room_exits.copy():
-                        
-                        if current_room_exits[i] not in visited:
-                            temp = current_room_exits[i]
-                            path.append(i)
-                            current_room = temp
-                            current_room_exits = self.vertices[current_room]["exits"]
-
-             
-
-            for exit in current_room_exits.copy():
-
-          
-
-                if exit in self.vertices[current_room]["exits"]:
-
-                    connected_room = self.vertices[current_room]["exits"][exit]
-
-                if connected_room == "?":
-                    
-                    for i in path:
-                        self.move(i, False)
-
-                    
-                    self.dft_room()
-
-                    return
-                else:
-
-                    if connected_room not in visited:
-              
-                        # player.travel(exit)
-                        prev = current_room
-                        if exit in self.vertices[current_room]["exits"]:
-
-                            current_room = self.vertices[current_room]["exits"][exit]
-                        # current_exits = self.vertices[current_room]["direction left"]
-                        # current_room = player.currentRoom.id
-                        # visited.append(current_room)
-                        path.append(exit)
-                        q.enqueue(current_room)
-                  
-                        current_room_exits = self.vertices[current_room]["direction left"]
-                    else:
-                        # player.travel(self.vertices[temp][exit])
-                        pass
-
-
-graph = Graph()
-graph.initial_room(player.currentRoom.id)
-# graph.dft_room()
-# graph.dft_room()
-# graph.dft_room()
-# graph.dft_room()
-# graph.move("n")
-# graph.move("s")
-# graph.move("s")
-# graph.move("s")
-
-counter = 0
-finished = None
-while finished is None:
-    finished = graph.dft_room()
-    counter += 1
-    if finished:
-        print("Completed")
-    if counter == 50:
-        print("Incomplete")
-        break
-print(graph.vertices)
+traversalPath = traverse_recursively(player, visited_rooms={})
 print(traversalPath)
 
-# print(graph.vertices)
-# graph.dft_room()
-# graph.dft_room()
-# graph.dft_room()
-# print(graph.vertices)
-# print(player.currentRoom)
-# self.direction_opposite(direction)
-
 # TRAVERSAL TEST
-# visited_rooms = set()
-# player.currentRoom = world.startingRoom
-# visited_rooms.add(player.currentRoom)
+visited_rooms = set()
+player.currentRoom = world.startingRoom
+visited_rooms.add(player.currentRoom)
 
-# for move in traversalPath:
-#     player.travel(move)
-#     visited_rooms.add(player.currentRoom)
+for move in traversalPath:
+    player.travel(move)
+    visited_rooms.add(player.currentRoom)
 
-# if len(visited_rooms) == len(roomGraph):
-#     print(
-#         f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
-# else:
-#     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
-#     print(f"{len(roomGraph) - len(visited_rooms)} unvisited rooms")
+if len(visited_rooms) == len(roomGraph):
+    print(
+        f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
+else:
+    print("TESTS FAILED: INCOMPLETE TRAVERSAL")
+    print(f"{len(roomGraph) - len(visited_rooms)} unvisited rooms")
 
-# print("ID", player.currentRoom.id)
-# print("CR", player.currentRoom)
-# print("DIR", player.travel("n"))
-# print("ID AFTER", player.currentRoom.id)
-# print("EXITS", player.currentRoom.getExits())
-# print("CR", player.currentRoom)
 
-######
+#######
 # UNCOMMENT TO WALK AROUND
-######
+#######
 # player.currentRoom.printRoomDescription(player)
 # while True:
 #     cmds = input("-> ").lower().split(" ")
