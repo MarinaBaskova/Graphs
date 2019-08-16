@@ -4,11 +4,10 @@ You are provided with a pre-generated graph consisting of 500 rooms. You are res
 
 Open `adv.py`. There are four parts to the provided code:
 
-* World generation code. Do not modify this!
-* An incomplete list of directions. Your task is to fill this with valid traversal directions.
-* Test code. Run the tests by typing `python3 adv.py` in your terminal.
-* REPL code. You can uncomment this and run `python3 adv.py` to walk around the map.
-
+- World generation code. Do not modify this!
+- An incomplete list of directions. Your task is to fill this with valid traversal directions.
+- Test code. Run the tests by typing `python3 adv.py` in your terminal.
+- REPL code. You can uncomment this and run `python3 adv.py` to walk around the map.
 
 You may find the commands `player.currentRoom.id`, `player.currentRoom.getExits()` and `player.travel(direction)` useful.
 
@@ -47,12 +46,42 @@ If all paths have been explored, you're done!
 
 ## Minimum Viable Product
 
-* __1__: Tests do not pass
-* __2__: Tests pass with `len(traversalPath) < 2000`
-* __3__: Tests pass with `len(traversalPath) < 1000`
+- **1**: Tests do not pass
+- **2**: Tests pass with `len(traversalPath) < 2000`
+- **3**: Tests pass with `len(traversalPath) < 1000`
 
 ## Stretch Problems
 
 It is very difficult to calculate the shortest possible path that traverses the entire graph. Why?
 
 My best path is 990 moves. Can you find a shorter path?
+
+# DFT
+
+# Request direction that you can move
+
+# Make a move ( pick direction)
+
+# Get current room id
+
+# Set edges between last room and current room
+
+# Request direction that you can move loop through them and add edges to the current room with availble directions from the request
+
+# We are done when our keys in the Graph == 500
+
+# STEPS TO SOLVE (almost) ANY GRAPHS PROBLEM!
+
+# - Translate the problem into graph terminology
+
+# Nodes: Rooms - each room has a number
+
+# Edges: Exists N S E W that leads to that room
+
+# Non directional
+
+# DFT until we hit deadend and then call BFS
+
+# - Build your graph
+
+# - Traverse your graph

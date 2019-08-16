@@ -124,3 +124,9 @@ print(earliest_ancestor([(1, 3), (2, 3), (3, 6), (5, 6), (5, 7),
                          (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)], 11))
 
 # [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7), (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]
+
+
+# STEPS TO SOLVE(almost) ANY GRAPHS PROBLEM!
+# * Translate the problem into graph terminology
+# * Build your graph
+# * Traverse your graph
